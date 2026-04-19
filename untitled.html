@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>⚠️ SYSTEM LOCKED ⚠️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: black;
+            font-family: 'Courier New', 'Fira Code', monospace;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+
+        /* Overlay utama - tampilan virus */
+        .virus-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, #1a0000, #000000);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            animation: bgPulse 0.5s infinite alternate;
+        }
+
+        @keyframes bgPulse {
+            0% { background-color: #0a0000; }
+            100% { background-color: #2a0000; }
+        }
+
+        /* Efek glitch pada teks */
+        .glitch {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff3333;
+            text-shadow: 2px 2px 0 #ff0000, -2px -2px 0 #990000;
+            animation: glitchAnim 0.15s infinite;
+            letter-spacing: 5px;
+        }
+
+        @keyframes glitchAnim {
+            0% { transform: skew(0deg, 0deg); opacity: 1; }
+            95% { transform: skew(0deg, 0deg); opacity: 1; }
+            96% { transform: skew(5deg, 2deg); opacity: 0.9; }
+            97% { transform: skew(-3deg, -1deg); opacity: 0.95; }
+            100% { transform: skew(0deg, 0deg); opacity: 1; }
+        }
+
+        .lock-icon {
+            font-size: 6rem;
+            filter: drop-shadow(0 0 15px red);
+            animation: shakeLock 0.3s infinite;
+            margin: 20px 0;
+        }
+
+        @keyframes shakeLock {
+            0% { transform: translate(0px, 0px); }
+            25% { transform: translate(3px, -2px); }
+            50% { transform: translate(-3px, 2px); }
+            75% { transform: translate(2px, 1px); }
+            100% { transform: translate(0px, 0px); }
+        }
+
+        .message-box {
+            background: #000000aa;
+            backdrop-filter: blur(10px);
+            border: 2px solid #ff0000;
+            border-radius: 20px;
+            padding: 1.5rem;
+            max-width: 500px;
+            width: 90%;
+            margin: 20px auto;
+            box-shadow: 0 0 40px rgba(255,0,0,0.5);
+        }
+
+        .timer {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff6666;
+            background: #1a0000;
+            display: inline-block;
+            padding: 10px 25px;
+            border-radius: 50px;
+            margin: 15px 0;
+            font-family: monospace;
+            letter-spacing: 5px;
+            border: 1px solid red;
+        }
+
+        .progress-bar-container {
+            width: 80%;
+            height: 20px;
+            background: #2a2a2a;
+            border-radius: 30px;
+            margin: 20px auto;
+            overflow: hidden;
+            border: 1px solid #ff4444;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ff6600);
+            border-radius: 30px;
+            transition: width 0.1s linear;
+        }
+
+        .warning-text {
+            color: #ffaaaa;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            background: #1a0000aa;
+            padding: 10px;
+            border-radius: 10px;
+            font-family: monospace;
+        }
+
+        .file-scanner {
+            text-align: left;
+            background: #00000099;
+            padding: 12px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            color: #ff8888;
+            height: 150px;
+            overflow-y: auto;
+            margin: 15px 0;
+            font-family: monospace;
+        }
+
+        .file-scanner p {
+            margin: 4px 0;
+            border-left: 2px solid red;
+            padding-left: 8px;
+        }
+
+        button {
+            background: #330000;
+            border: 2px solid #ff0000;
+            color: #ff9999;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-top: 15px;
+            cursor: pointer;
+            border-radius: 40px;
+            font-family: monospace;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #660000;
+            box-shadow: 0 0 20px red;
+        }
+
+        /* Overlay kedua untuk lock screen sementara */
+        .lock-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            display: none;
+        }
+
+        .lock-overlay.active {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+
+<!-- LAYAR UTAMA VIRUS -->
+<div class="virus-overlay" id="virusScreen">
+    <div class="lock-icon">🔒💀⚠️</div>
+    <div class="glitch">!!! SYSTEM INFECTED !!!</div>
+    <div class="message-box">
+        <div style="font-size:1.2rem; color:#ff5555;">🔐 DEVICE LOCKED 🔐</div>
+        <div class="timer" id="lockTimer">02:00</div>
+        <div class="progress-bar-container">
+            <div class="progress-fill" id="lockProgress"></div>
+        </div>
+        <div class="file-scanner" id="fileScanner">
+            <p>📁 C:\Windows\System32\kernel32.dll → 🔒 ENCRYPTING...</p>
+            <p>📁 D:\Users\Documents\passwords.txt → 💀 CORRUPTED</p>
+            <p>📁 C:\ProgramData\WhatsApp\msgstore.db → 🔐 LOCKED</p>
+            <p>📁 /sdcard/DCIM/Camera/IMG_2024.jpg → 🔒 RANSOMED</p>
+        </div>
+        <div class="warning-text">
+            ⚠️ SEMUA FILE TELAH DIENKRIPSI DENGAN AES-256 ⚠️<br>
+            Hubungi support palsu: virus@ransom.local<br>
+            Jangan matikan perangkat! Data akan hilang permanen.
+        </div>
+        <button id="fakeUnlockBtn">🔓 UNLOCK DEVICE (TIDAK BERFUNGSI)</button>
+    </div>
+</div>
+
+<!-- LAYAR LOCK SCREEN KEDUA (setelah 2 menit) -->
+<div class="lock-overlay" id="secondLockScreen">
+    <div class="lock-icon" style="font-size:5rem;">📱🔒</div>
+    <div class="glitch" style="font-size:1.8rem;">PERANGKAT TERKUNCI</div>
+    <div class="message-box" style="background:#000; border-color:#ff0000;">
+        <p style="color:#ff8888; font-size:1rem;">Akses ditolak. Aktivitas mencurigakan terdeteksi.</p>
+        <div style="color:#ff4444; font-size:2rem; margin:15px;">⛔</div>
+        <p style="color:#aaa;">Kode kesalahan: 0x5F4E3C1A</p>
+        <p style="color:#ff6666; margin-top:15px;">Hubungi administrator sistem.</p>
+        <button id="restartFakeBtn" style="margin-top:20px;">RESTART (TIDAK AKTIF)</button>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // === SIMULASI VIRUS 100% NYATA (AMAN, HANYA VISUAL & SUARA) ===
+        let lockTimerSeconds = 120; // 2 menit
+        let alarmInterval = null;
+        let audioCtx = null;
+        let isAudioPlaying = false;
+        let soundTimeout = null;
+        let progressInterval = null;
+        let timerInterval = null;
+        
+        const virusScreen = document.getElementById('virusScreen');
+        const secondLockScreen = document.getElementById('secondLockScreen');
+        const lockTimerEl = document.getElementById('lockTimer');
+        const lockProgressFill = document.getElementById('lockProgress');
+        const fileScannerDiv = document.getElementById('fileScanner');
+        const fakeUnlockBtn = document.getElementById('fakeUnlockBtn');
+        const restartBtn = document.getElementById('restartFakeBtn');
+        
+        // === EFEK SUARA MENYERAMKAN SELAMA 5 MENIT (loop) ===
+        // Menggunakan Web Audio dengan nada rendah dan efek noise (tanpa autoplay, dimulai setelah interaksi)
+        // Karena browser modern blok autoplay, kita akan memulai suara setelah user klik "Unlock" atau di mana pun.
+        // Tapi untuk pengalaman "nyata", kita akan memulai suara segera setelah halaman dimuat dengan cara meminta interaksi.
+        // Alternatif: kita buat overlay "Klik untuk membuka" palsu? Tidak, lebih baik suara dimulai setelah user klik tombol fakeUnlockBtn atau area layar.
+        // Agar lebih menyeramkan, suara akan dimulai otomatis saat halaman terbuka jika user pernah interaksi sebelumnya? Tidak bisa.
+        // Solusi: kita tampilkan pesan "Klik di mana pun untuk memulai proses" tapi itu akan mengurangi kesan virus.
+        // Saya akan menggunakan pendekatan: saat halaman dimuat, kita coba play suara diam-diam (gagal), tapi kita tambahkan event listener klik pada body untuk memulai suara.
+        // Supaya efek suara langsung aktif saat user mencoba menekan tombol.
+        
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioCtx;
+        }
+        
+        // Memainkan suara alarm/seram (nada turun naik + noise)
+        let soundLoopActive = false;
+        let currentOsc = null;
+        let currentGain = null;
+        
+        function startHorrorSound() {
+            if (isAudioPlaying) return;
+            const ctx = initAudio();
+            if (ctx.state !== 'running') {
+                ctx.resume().then(() => {
+                    startHorrorSoundInternal();
+                }).catch(e => console.log);
+            } else {
+                startHorrorSoundInternal();
+            }
+        }
+        
+        function startHorrorSoundInternal() {
+            if (isAudioPlaying) return;
+            isAudioPlaying = true;
+            const ctx = audioCtx;
+            // Buat suara alarm intermittent dengan nada rendah dan efek sweep
+            // Kita akan menggunakan setInterval untuk memainkan nada setiap 1.5 detik selama 5 menit (300 detik)
+            let soundStartTime = Date.now();
+            const soundDuration = 300000; // 5 menit
+            
+            function playScaryBeep() {
+                if (!isAudioPlaying) return;
+                if (Date.now() - soundStartTime > soundDuration) {
+                    // hentikan setelah 5 menit
+                    stopHorrorSound();
+                    return;
+                }
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                // Pilih frekuensi acak antara 300-800 Hz untuk efek menyeramkan
+                const freq = 400 + Math.random() * 400;
+                osc.type = 'sawtooth';
+                osc.frequency.value = freq;
+                gain.gain.value = 0.25;
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+                osc.stop(now + 0.6);
+                
+                // tambahan noise statis sesekali
+                if (Math.random() > 0.7) {
+                    const noiseOsc = ctx.createOscillator();
+                    const noiseGain = ctx.createGain();
+                    noiseOsc.type = 'square';
+                    noiseOsc.frequency.value = 80;
+                    noiseGain.gain.value = 0.1;
+                    noiseOsc.connect(noiseGain);
+                    noiseGain.connect(ctx.destination);
+                    noiseOsc.start();
+                    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+                    noiseOsc.stop(now + 0.3);
+                }
+            }
+            
+            // Mainkan segera
+            playScaryBeep();
+            // interval setiap 1.2 detik
+            alarmInterval = setInterval(() => {
+                if (isAudioPlaying) playScaryBeep();
+            }, 1200);
+            
+            // Hentikan setelah 5 menit
+            soundTimeout = setTimeout(() => {
+                stopHorrorSound();
+            }, soundDuration);
+        }
+        
+        function stopHorrorSound() {
+            if (alarmInterval) {
+                clearInterval(alarmInterval);
+                alarmInterval = null;
+            }
+            if (soundTimeout) {
+                clearTimeout(soundTimeout);
+                soundTimeout = null;
+            }
+            isAudioPlaying = false;
+            if (audioCtx) {
+                // tidak menutup context, hanya stop suara
+            }
+        }
+        
+        // === SIMULASI LOCK 2 MENIT ===
+        function updateLockDisplay() {
+            if (lockTimerSeconds <= 0) {
+                // Waktu habis, pindah ke layar lock kedua
+                clearInterval(timerInterval);
+                clearInterval(progressInterval);
+                virusScreen.style.display = 'none';
+                secondLockScreen.classList.add('active');
+                // tetap mainkan suara (masih 5 menit total)
+                return;
+            }
+            const minutes = Math.floor(lockTimerSeconds / 60);
+            const seconds = lockTimerSeconds % 60;
+            lockTimerEl.innerText = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+            const progressPercent = ((120 - lockTimerSeconds) / 120) * 100;
+            lockProgressFill.style.width = progressPercent + '%';
+            
+            // tambah file scanner secara dinamis
+            if (lockTimerSeconds === 90) {
+                addScannerLine('📁 C:\\Users\\Public\\Desktop\\rahasia.docx → 🔒 LOCKED');
+            }
+            if (lockTimerSeconds === 60) {
+                addScannerLine('💀 MEMORY DUMP CORRUPTED 💀');
+            }
+            if (lockTimerSeconds === 30) {
+                addScannerLine('⚠️ SISTEM AKAN TERKUNCI PERMANEN ⚠️');
+            }
+            lockTimerSeconds--;
+        }
+        
+        function addScannerLine(text) {
+            const p = document.createElement('p');
+            p.innerHTML = text;
+            fileScannerDiv.appendChild(p);
+            fileScannerDiv.scrollTop = fileScannerDiv.scrollHeight;
+        }
+        
+        function startLockCountdown() {
+            lockTimerSeconds = 120;
+            updateLockDisplay();
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                updateLockDisplay();
+            }, 1000);
+            
+            // progress bar update cepat
+            if (progressInterval) clearInterval(progressInterval);
+            progressInterval = setInterval(() => {
+                // sudah diupdate di updateLockDisplay
+            }, 100);
+        }
+        
+        // === RESET / FAKE UNLOCK (hanya efek, tidak membuka) ===
+        fakeUnlockBtn.addEventListener('click', () => {
+            // Menampilkan pesan error bahwa unlock gagal
+            const msgBox = document.querySelector('.message-box');
+            const errorDiv = document.createElement('div');
+            errorDiv.style.color = '#ff8888';
+            errorDiv.style.marginTop = '10px';
+            errorDiv.style.fontSize = '0.8rem';
+            errorDiv.innerText = '❌ KODE UNLOCK SALAH! PERCOBAAN TERSISA: 0 ❌';
+            if (!document.querySelector('.error-msg')) {
+                errorDiv.classList.add('error-msg');
+                msgBox.appendChild(errorDiv);
+                setTimeout(() => errorDiv.remove(), 3000);
+            }
+            // getar visual
+            virusScreen.style.transform = 'translateX(3px)';
+            setTimeout(() => virusScreen.style.transform = '', 100);
+        });
+        
+        restartBtn.addEventListener('click', () => {
+            // Tidak ada fungsi restart, hanya efek
+            secondLockScreen.style.transform = 'scale(0.98)';
+            setTimeout(() => secondLockScreen.style.transform = '', 200);
+        });
+        
+        // === MEMULAI SUARA SETELAH USER INTERAKSI PERTAMA (klik di mana saja) ===
+        let soundStarted = false;
+        function startSoundOnFirstInteraction() {
+            if (soundStarted) return;
+            soundStarted = true;
+            startHorrorSound();
+            // hapus event listener setelah mulai
+            document.removeEventListener('click', startSoundOnFirstInteraction);
+            document.removeEventListener('touchstart', startSoundOnFirstInteraction);
+        }
+        
+        document.addEventListener('click', startSoundOnFirstInteraction);
+        document.addEventListener('touchstart', startSoundOnFirstInteraction);
+        
+        // === EFEK TAMBAHAN: TAMPILAN PESAN PALSU ===
+        // Menambahkan baris acak setiap 3 detik
+        setInterval(() => {
+            if (virusScreen.style.display !== 'none') {
+                const randomMsgs = [
+                    '🔐 ENKRIPSI SEKTOR 0x7F...',
+                    '💀 RANSOMWARE AKTIF 💀',
+                    '📡 MENGIRIM DATA KE SERVER...',
+                    '⚠️ WINDOWS REGISTRY CORRUPTED',
+                    '🔒 LOCKING FILE SYSTEM...'
+                ];
+                const rand = randomMsgs[Math.floor(Math.random() * randomMsgs.length)];
+                addScannerLine(rand);
+                // batasi jumlah baris
+                if (fileScannerDiv.children.length > 20) {
+                    fileScannerDiv.removeChild(fileScannerDiv.children[0]);
+                }
+            }
+        }, 4000);
+        
+        // Mulai countdown lock
+        startLockCountdown();
+        
+        // Efek visual tambahan: ubah judul tab
+        let titleInterval = setInterval(() => {
+            if (virusScreen.style.display !== 'none') {
+                document.title = "⚠️ VIRUS DETEKSI ⚠️";
+            } else {
+                document.title = "🔒 PERANGKAT TERKUNCI 🔒";
+            }
+        }, 1000);
+        
+        // Blokir akses klik kanan
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+        // Blokir F12 dan Ctrl+Shift+I (sederhana)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.ctrlKey && e.key === 'u')) {
+                e.preventDefault();
+            }
+        });
+        
+        console.log("%c⚠️ INI HANYA SIMULASI VIRUS - TIDAK BERBAHAYA ⚠️", "color: red; font-size: 16px");
+    })();
+</script>
+</body>
+</html>
